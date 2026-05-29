@@ -10,7 +10,7 @@
 
 - **谱面变速** - 按指定倍率缩放所有音符时间与 BPM 值，内置排除列表以修复一些谱面演出错误
 - **音频变速** - 基于 FFmpeg 的多线程处理，支持多种音高模式（自动升降调 / 保持原调 / 自定义半音）
-- **Songlist 变速** - 缩放 BPM 字符串、`bpm_base`、`audioPreview`/`audioPreviewEnd`，并为多语言标题追加变速倍率后缀
+- **Songlist 变速** - 缩放 BPM 字符串、基准 BPM、音频预览，并为多语言标题追加变速倍率后缀
 - **跨平台** - 支持 Windows、Linux、macOS（需安装 FFmpeg）
 
 
@@ -44,7 +44,7 @@ arcaea-speed-tool
 
 ### 配置说明
 
-在工作目录下编辑 `config.toml`：
+在工作目录下编辑 **config.toml**：
 
 ```toml
 [paths]
@@ -58,7 +58,7 @@ offset_ratio = 0.8             # AudioOffset / audioPreview 缩放（通常为 1
 force_lf = true                # 强制 LF 换行
 ```
 
-完整选项见 [config.toml](config.toml)。
+完整选项详见 [config.toml](config.toml)。
 
 
 
@@ -83,7 +83,7 @@ arcaea_speed_tool/
 
 ### 协议
 
-MIT - see [LICENSE](LICENSE).
+[MIT](LICENSE)
 
 ### 致谢
 

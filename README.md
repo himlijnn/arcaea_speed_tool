@@ -10,7 +10,7 @@
 
 - **Charts** - scales all note timestamps and BPM values by a configurable ratio, with a built-in exclusion list for per-chart compatibility fixes
 - **Audio** - FFmpeg-based multi-threaded speed change with multiple pitch modes (auto shift / preserve pitch / custom semitone)
-- **Songlist** - scales BPM strings, `bpm_base`, `audioPreview`/`audioPreviewEnd`, and appends a speed-ratio suffix to localized titles
+- **Songlist** - scales BPM strings, BPM base, audio preview, and appends a speed-ratio suffix to localized titles
 - **Cross-platform** - works on Windows, Linux, and macOS (FFmpeg required)
 
 ### Requirements
@@ -43,7 +43,7 @@ arcaea-speed-tool
 
 ### Configuration
 
-Edit `config.toml` in your working directory:
+Edit **config.toml** in your working directory:
 
 ```toml
 [paths]
@@ -81,12 +81,12 @@ arcaea_speed_tool/
 
 ### License
 
-MIT - see [LICENSE](LICENSE).
+[MIT](LICENSE)
 
 ### Acknowledgments
 
 - [arcfutil](https://github.com/feightwywx/arcfutil) - Arcaea File Utility
-- All members who helped with early per-chart compatibility testing
+- All members who helped with per-chart compatibility testing
 - 黎明职业中学 (developer, identity keep secret)
 
 ### Author
