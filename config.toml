@@ -22,7 +22,7 @@ ffmpeg_path = "ffmpeg"
 
 [global]
 
-# Core speed multiplier
+# Speed multiplier
 speed_ratio = 1.25
 
 # Time offset scale (AudioOffset / audioPreview etc., typically 1 / speed_ratio)

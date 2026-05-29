@@ -52,7 +52,7 @@ output_dir = "./songs_output"
 ffmpeg_path = "ffmpeg"        # "ffmpeg" on Linux/macOS, full path on Windows
 
 [global]
-speed_ratio = 1.25             # core speed multiplier
+speed_ratio = 1.25             # speed multiplier
 offset_ratio = 0.8             # AudioOffset / audioPreview scale (inverse of speed_ratio, kept separate for precision)
 force_lf = true                # enforce LF line endings
 ```

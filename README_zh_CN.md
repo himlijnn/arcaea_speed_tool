@@ -50,10 +50,10 @@ arcaea-speed-tool
 [paths]
 songs_dir = "./songs"
 output_dir = "./songs_output"
-ffmpeg_path = "ffmpeg"        # Linux/macOS 用 "ffmpeg"，Windows 填写完整路径
+ffmpeg_path = "ffmpeg"        # Linux/macOS 填写 "ffmpeg"，Windows 填写完整路径
 
 [global]
-speed_ratio = 1.25             # 核心变速倍率
+speed_ratio = 1.25             # 变速倍率
 offset_ratio = 0.8             # AudioOffset / audioPreview 缩放（通常为 1/speed_ratio）为保证精度，将变速倍率与其倒数分开配置
 force_lf = true                # 强制 LF 换行
 ```
@@ -81,7 +81,7 @@ arcaea_speed_tool/
 └── requirements.txt
 ```
 
-### 协议
+### 许可证
 
 [MIT](LICENSE)
 
