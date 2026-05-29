@@ -1,0 +1,90 @@
+# =============================================================================
+# Arcaea Speed Tool — Configuration
+# Processes the entire songs/ folder (charts / audio / songlist)
+# =============================================================================
+
+[paths]
+
+# Input directory (songs folder path)
+songs_dir = "./songs"
+
+# Output directory (all processed files are written here)
+output_dir = "./songs_output"
+
+# FFmpeg executable path for audio processing.
+# - Linux / macOS: "ffmpeg" (uses system PATH)
+# - Windows:       "C:\\path\\to\\ffmpeg.exe"
+ffmpeg_path = "ffmpeg"
+
+# =============================================================================
+# Global — applied to all processors
+# =============================================================================
+
+[global]
+
+# Core speed multiplier
+speed_ratio = 1.25
+
+# Time offset scale (AudioOffset / audioPreview etc., typically 1 / speed_ratio)
+offset_ratio = 0.8
+
+# Force LF line endings on output files
+force_lf = true
+
+# =============================================================================
+# Chart processor
+# =============================================================================
+
+[aff]
+
+# BPM values excluded from scaling (per-chart compatibility fixes)
+excluded_bpm = [
+    -23400000.0,  # aegleseeker/2.aff
+    -1793400.0,   # kokoro/2.aff
+    -17800000.0,  # testify/3.aff
+    -40000000.0,  # theultimacy/2.aff
+    -16000000.0,  # tsukinimurakumo/2.aff
+    -20720.0,     # worldender/2.aff & 3.aff
+]
+
+# =============================================================================
+# Audio processor
+# =============================================================================
+
+[audio]
+
+# Audio file extensions to process
+include_extensions = [".ogg", ".wav"]
+
+# Pitch mode: "auto" (shift with speed) | "keep" (preserve pitch) | "custom" (custom semitone shift)
+pitch_mode = "auto"
+
+# Custom semitone shift (only used when pitch_mode = "custom")
+custom_pitch_semitones = 0
+
+# Audio bitrate (leave empty to use the quality setting below)
+audio_bitrate = ""
+
+# Audio quality (0-10, higher = better).
+# Codec-specific mapping is handled automatically:
+#   ogg (libvorbis) → -q:a N   (direct, N=-2..10)
+#   mp3 (libmp3lame)→ -q:a 9-N (inverted, 0=best in FFmpeg)
+#   wav / flac       → lossless (ignored)
+audio_quality = 3
+
+# Output sample rate (0 = keep original sample rate)
+audio_samplerate = 44100
+
+# Volume multiplier (1.0 = unchanged)
+audio_volume = 1.0
+
+# Audio codec (leave empty to auto-select by output format)
+audio_codec = ""
+
+# Number of parallel worker threads
+max_workers = 8
+
+# Keep metadata tags
+keep_metadata = true
+
+
