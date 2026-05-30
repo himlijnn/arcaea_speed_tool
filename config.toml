@@ -29,9 +29,11 @@ speed_ratio = 1.25
 offset_ratio = 0
 
 # Processing mode.
-# "" (empty) = all, with unprocessed files (images etc.) copied to output.
-# "chart" / "audio" / "songlist" = single mode, unprocessed files are NOT copied.
+# "" (empty) = all. "chart" / "audio" / "songlist" = single mode.
 mode = ""
+
+# Copy unprocessed files (images etc.) to output directory.
+copy_unprocessed = true
 
 # Force LF line endings on output files
 force_lf = true
