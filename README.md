@@ -71,7 +71,7 @@ offset_ratio = 0.8             # AudioOffset scale
 # Kept separate from speed_ratio for precision
 force_lf = true                # enforce LF line endings
 
-...
+# ...
 ```
 
 See [config.toml](config.toml) for all options.

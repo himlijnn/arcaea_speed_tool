@@ -69,7 +69,7 @@ offset_ratio = 0.8             # AudioOffset 缩放
 # 为保证精度，将变速倍率与其倒数分开配置
 force_lf = true                # 强制输出 LF 换行
 
-...
+# ...
 ```
 
 完整选项详见 [config.toml](config.toml)。
