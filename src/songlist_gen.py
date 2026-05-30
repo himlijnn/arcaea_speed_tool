@@ -98,7 +98,7 @@ def _process_json(obj, speed_ratio: float, offset_ratio: float) -> None:
 def _scale_bpm_string(bpm_str: str, speed_ratio: float) -> str:
     """Scale all numeric values inside a BPM string.
 
-    Example: "100-200" * 1.25 → "125.0-250.0"
+    Example: "100-200" * 1.25 -> "125.0-250.0"
     """
     numbers = re.findall(r"\d+\.?\d*", bpm_str)
     if not numbers:

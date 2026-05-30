@@ -25,8 +25,13 @@ ffmpeg_path = "ffmpeg"
 # Speed multiplier
 speed_ratio = 1.25
 
-# Time offset scale (AudioOffset / audioPreview etc., typically 1 / speed_ratio)
-offset_ratio = 0.8
+# Audio offset scale. 0 = auto (1 / speed_ratio).
+offset_ratio = 0
+
+# Processing mode.
+# "" (empty) = all, with unprocessed files (images etc.) copied to output.
+# "chart" / "audio" / "songlist" = single mode, unprocessed files are NOT copied.
+mode = ""
 
 # Force LF line endings on output files
 force_lf = true
@@ -36,6 +41,9 @@ force_lf = true
 # =============================================================================
 
 [aff]
+
+# Enable the BPM exclusion list below
+enable_exclusion = true
 
 # BPM values excluded from scaling (per-chart compatibility fixes)
 excluded_bpm = [
@@ -67,18 +75,18 @@ audio_bitrate = ""
 
 # Audio quality (0-10, higher = better).
 # Codec-specific mapping is handled automatically:
-#   ogg (libvorbis) → -q:a N   (direct, N=-2..10)
-#   mp3 (libmp3lame)→ -q:a 9-N (inverted, 0=best in FFmpeg)
-#   wav / flac       → lossless (ignored)
+#   ogg (libvorbis) -> -q:a N   (direct, N=-2..10)
+#   mp3 (libmp3lame)-> -q:a 9-N (inverted, 0=best in FFmpeg)
+#   wav / flac       -> lossless (ignored)
 audio_quality = 3
 
-# Output sample rate (0 = keep original sample rate)
-audio_samplerate = 44100
+# Output sample rate. 0 = keep original.
+audio_samplerate = 0
 
-# Volume multiplier (1.0 = unchanged)
-audio_volume = 1.0
+# Volume multiplier (1 = unchanged)
+audio_volume = 1
 
-# Audio codec (leave empty to auto-select by output format)
+# Audio codec. Leave empty to auto-select by output file extension.
 audio_codec = ""
 
 # Number of parallel worker threads
@@ -86,5 +94,3 @@ max_workers = 8
 
 # Keep metadata tags
 keep_metadata = true
-
-

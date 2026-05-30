@@ -17,7 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from . import utils
 
-# Codec lookup table: file extension → FFmpeg codec name
+# Codec lookup table: file extension -> FFmpeg codec name
 _CODEC_MAP = {
     ".wav": "pcm_s16le",
     ".mp3": "libmp3lame",
@@ -126,11 +126,10 @@ def _process_one(
             quality = int(config.get("audio_quality", 5))
             cmd.extend(_build_quality_args(codec, quality))
 
-    cmd.extend([
-        "-ar", str(config.get("audio_samplerate", 44100) or sr),
-        "-vn",
-        out_file,
-    ])
+    samplerate = config.get("audio_samplerate", 0)
+    if samplerate != 0:
+        cmd.extend(["-ar", str(samplerate)])
+    cmd.extend(["-vn", out_file])
 
     res = subprocess.run(
         cmd, capture_output=True, text=True, encoding="utf-8", errors="ignore"
@@ -165,7 +164,7 @@ def _probe(filepath: str, ffmpeg: str) -> dict:
 def _get_ffprobe(ffmpeg_path: str) -> str:
     """Derive the ffprobe path from the ffmpeg path.
 
-    Handles both Windows (ffmpeg.exe → ffprobe.exe) and Linux/macOS (ffmpeg → ffprobe).
+    Handles both Windows (ffmpeg.exe -> ffprobe.exe) and Linux/macOS (ffmpeg -> ffprobe).
     When ffmpeg_path is a bare name like "ffmpeg", returns "ffprobe" (found via PATH).
     """
     if ffmpeg_path.endswith(".exe"):
@@ -216,7 +215,7 @@ def _build_quality_args(codec: str, quality: int) -> list[str]:
     Lossless codecs (pcm_s16le, flac) never reach this function.
     """
     if codec == "libmp3lame":
-        # MP3: FFmpeg -q:a 0 = best, 9 = worst → invert
+        # MP3: FFmpeg -q:a 0 = best, 9 = worst -> invert
         inverted = max(0, min(9, 9 - quality))
         return ["-q:a", str(inverted)]
 

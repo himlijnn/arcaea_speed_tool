@@ -153,7 +153,7 @@ def _collect_time_objects(group: list, scale_factor: float) -> list:
 
 
 def _build_time_mapping(time_objects: list) -> dict:
-    """Build a mapping from original time → scaled rounded time.
+    """Build a mapping from original time -> scaled rounded time.
 
     Rule: round-half-up, and ensure mapped times are strictly non-decreasing
     (each subsequent time >= previous + 1).

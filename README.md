@@ -67,9 +67,6 @@ ffmpeg_path = "ffmpeg"
 
 [global]
 speed_ratio = 1.25             # speed multiplier
-offset_ratio = 0.8             # AudioOffset scale
-# Kept separate from speed_ratio for precision
-force_lf = true                # enforce LF line endings
 
 # ...
 ```

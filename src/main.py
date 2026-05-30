@@ -1,11 +1,11 @@
 """Arcaea Speed Tool — main entry point.
 
-Processes the entire songs/ folder structure:
+Processes the entire songs folder structure:
   songs/
     <song_name>/
-      0.aff, 1.aff, ...   → chart speed change
-      base.ogg            → audio speed change
-    songlist              → songlist speed change
+      0.aff, 1.aff, ...   -> chart speed change
+      base.ogg            -> audio speed change
+    songlist              -> songlist speed change
 
 All output is written to output_dir, preserving the original directory structure.
 """
@@ -45,13 +45,22 @@ def main(config_path: str = "config.toml") -> None:
     output_dir = paths["output_dir"]
     ffmpeg_path = paths["ffmpeg_path"]
     speed_ratio = global_["speed_ratio"]
-    offset_ratio = global_["offset_ratio"]
+    offset_ratio = global_.get("offset_ratio", 0)
+    if offset_ratio == 0:
+        offset_ratio = 1.0 / speed_ratio
+    mode = global_.get("mode", "").strip().lower()
     force_lf = global_["force_lf"]
+
+    run_chart = mode in ("", "all", "chart")
+    run_audio = mode in ("", "all", "audio")
+    run_songlist = mode in ("", "all", "songlist")
+    run_all = mode == ""
 
     print(f"\n  Input dir:    {os.path.abspath(songs_dir)}")
     print(f"  Output dir:   {os.path.abspath(output_dir)}")
     print(f"  Speed ratio:  {speed_ratio}x")
-    print(f"  Offset ratio: {offset_ratio}")
+    print(f"  Offset ratio: {offset_ratio}{' (auto)' if offset_ratio == 1.0 / speed_ratio else ''}")
+    print(f"  Mode:         {'all' if mode == '' else mode}")
     print(f"  Force LF:     {force_lf}")
     print()
 
@@ -80,64 +89,81 @@ def main(config_path: str = "config.toml") -> None:
         print(f"[{i}/{len(song_dirs)}] {song_name}")
 
         # --- 3a. chart processing ---
-        aff_files = utils.collect_files(song_dir, [".aff"])
-        aff_config = cfg.get("aff", {})
-        excluded_bpm = aff_config.get("excluded_bpm", [])
+        if run_chart:
+            aff_files = utils.collect_files(song_dir, [".aff"])
+            aff_config = cfg.get("aff", {})
+            if aff_config.get("enable_exclusion", True):
+                excluded_bpm = aff_config.get("excluded_bpm", [])
+            else:
+                excluded_bpm = []
 
-        for aff_path in aff_files:
-            aff_total += 1
-            rel = os.path.relpath(aff_path, songs_dir)
-            out_path = os.path.join(output_dir, rel)
-            if aff_gen.process(
-                aff_path, out_path, speed_ratio, offset_ratio,
-                excluded_bpm, force_lf,
-            ):
-                aff_success += 1
+            for aff_path in aff_files:
+                aff_total += 1
+                rel = os.path.relpath(aff_path, songs_dir)
+                out_path = os.path.join(output_dir, rel)
+                if aff_gen.process(
+                    aff_path, out_path, speed_ratio, offset_ratio,
+                    excluded_bpm, force_lf,
+                ):
+                    aff_success += 1
+        else:
+            print("  (chart skipped)")
 
         # --- 3b. Audio processing ---
-        audio_cfg = cfg.get("audio", {})
-        audio_cfg = dict(audio_cfg)  # shallow copy to avoid mutating the original
-        audio_cfg["ffmpeg_path"] = ffmpeg_path
-        audio_success += audio_gen.process(
-            song_dir, output_dir, speed_ratio, audio_cfg,
-        )
+        if run_audio:
+            audio_cfg = cfg.get("audio", {})
+            audio_cfg = dict(audio_cfg)  # shallow copy to avoid mutating the original
+            audio_cfg["ffmpeg_path"] = ffmpeg_path
+            audio_success += audio_gen.process(
+                song_dir, output_dir, speed_ratio, audio_cfg,
+            )
+        else:
+            print("  (audio skipped)")
 
         print()  # blank line between songs
 
     # ========================================================================
     # 4. Songlist processing
     # ========================================================================
-    print("[songlist]")
-    songlist_ok = songlist_gen.process(
-        songs_dir, output_dir, speed_ratio, offset_ratio, force_lf,
-    )
-    print()
+    if run_songlist:
+        print("[songlist]")
+        songlist_ok = songlist_gen.process(
+            songs_dir, output_dir, speed_ratio, offset_ratio, force_lf,
+        )
+        print()
+    else:
+        print("[songlist] (skipped)\n")
+        songlist_ok = False
 
     # ========================================================================
-    # 5. Copy unprocessed files (images, etc.)
+    # 5. Copy unprocessed files (images, etc.) — only in full mode
     # ========================================================================
-    audio_exts = set(cfg.get("audio", {}).get("include_extensions", [".ogg", ".wav"]))
-    skip_exts = {".aff"} | audio_exts
-    skip_names = {"songlist"}
+    copied = 0
+    if run_all:
+        audio_exts = set(cfg.get("audio", {}).get("include_extensions", [".ogg", ".wav"]))
+        skip_exts = {".aff"} | audio_exts
+        skip_names = {"songlist"}
 
-    copied = utils.copy_unprocessed(
-        songs_dir, output_dir,
-        skip_extensions=skip_exts,
-        skip_names=skip_names,
-    )
-    if copied:
-        print(f"\nCopied {copied} unprocessed file(s).")
+        copied = utils.copy_unprocessed(
+            songs_dir, output_dir,
+            skip_extensions=skip_exts,
+            skip_names=skip_names,
+        )
+        if copied:
+            print(f"Copied {copied} unprocessed file(s).\n")
 
     # ========================================================================
     # 6. Summary
     # ========================================================================
     print("=" * 60)
     print("  Done!")
-    print(f"  charts:      {aff_success}/{aff_total} succeeded")
-    if songlist_ok:
-        print("  Songlist:    processed")
-    else:
-        print("  Songlist:    not found / skipped")
+    if run_chart:
+        print(f"  charts:      {aff_success}/{aff_total} succeeded")
+    if run_songlist:
+        if songlist_ok:
+            print("  Songlist:    processed")
+        else:
+            print("  Songlist:    not found")
     print(f"  other:       {copied} copied")
     print("=" * 60)
 
@@ -145,7 +171,6 @@ def main(config_path: str = "config.toml") -> None:
 
 
 def _press_enter_to_exit() -> None:
-    """Pause before exiting so the user can see the output (Windows / double-click runs)."""
     if os.name == "nt":
         input("\nPress Enter to exit...")
 
