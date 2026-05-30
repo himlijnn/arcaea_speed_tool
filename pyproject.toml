@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "arcaea-speed-tool"
-version = "0.1.0"
+version = "0.2.0"
 description = "Speed-change tool for Arcaea songs (charts, audio, songlist)"
 authors = [{ name = "him lijnn" }]
 license = { text = "MIT" }

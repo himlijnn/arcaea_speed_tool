@@ -4,7 +4,7 @@ Processes the entire songs/ folder structure:
   songs/
     <song_name>/
       0.aff, 1.aff, ...   → chart speed change
-      base.ogg, base.wav  → audio speed change
+      base.ogg            → audio speed change
     songlist              → songlist speed change
 
 All output is written to output_dir, preserving the original directory structure.
