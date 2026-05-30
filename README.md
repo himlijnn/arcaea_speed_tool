@@ -1,6 +1,6 @@
 # Arcaea Speed Tool
 
-*Batch speed-change tool for Arcaea songs - charts, audio, and songlist in one time.*
+Batch speed-change tool for Arcaea songs - charts, audio, and songlist in one time.
 
 [English](README.md) | [简体中文](README_zh_CN.md)
 
@@ -8,10 +8,10 @@
 
 ### Features
 
-One-click speed processing for the entire **songs** folder!
+Fast and easy to process the entire songs folder or part of files!
 
 - **Charts** - scales all note time and BPM values by a configurable ratio
-  - Includes a BPM exclusion list to prevent chart play error
+  - Includes a BPM exclusion list to prevent some chart play error
 - **Audio** - FFmpeg-based multi-threaded audio processing
   - Defaults to 8 worker threads; adjustable based on hardware
   - Pitch mode options: auto shift, preserve original, or manual
@@ -56,7 +56,7 @@ arcaea-speed-tool
 
 ### Configuration
 
-Edit the key options in **config.toml** under your working directory:
+Edit the key options in config.toml under your working directory:
 
 ```toml
 [paths]

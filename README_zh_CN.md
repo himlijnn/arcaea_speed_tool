@@ -1,15 +1,16 @@
 # Arcaea Speed Tool
 
-*Arcaea 曲目批量变速工具 - 支持谱面、音频、songlist 一键处理。*
+Arcaea 曲目批量变速工具 - 支持谱面、音频、songlist 一键处理。
 
 [English](README.md) | [简体中文](README_zh_CN.md)
 
 ---
 
 ### 功能
-一键对整个 **songs** 文件夹变速处理！
+
+轻松对整个 songs 文件夹或部分文件变速处理！
 - **谱面变速** - 按指定倍率缩放所有 note 时间与 BPM 值
-  - 内置人工整理的 BPM 排除列表，防止出现谱面演出错误
+  - 内置人工整理的 BPM 排除列表，防止一些谱面播放错误
 - **音频变速** - 基于 FFmpeg 的多线程音频处理
   - 默认 8 线程处理，可根据设备性能手动调整
   - 可选择自动变调、保持原音调或手动指定
@@ -54,7 +55,7 @@ arcaea-speed-tool
 
 ### 配置说明
 
-在工作目录下编辑 **config.toml** 中的重要选项：
+在工作目录下编辑 config.toml 中的重要选项：
 
 ```toml
 [paths]
