@@ -3,4 +3,4 @@
 # Licensed under the MIT License.
 
 __author__ = "him lijnn"
-__version__ = "0.2.0"
+__version__ = "0.3.0"

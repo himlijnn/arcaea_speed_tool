@@ -110,25 +110,31 @@ def _process_one(
 
     # Build FFmpeg command
     cmd = [ffmpeg, "-y", "-i", in_file]
-    if not config.get("keep_metadata", True):
+    if not config.get("keep_metadata", False):
         cmd.extend(["-map_metadata", "-1"])
     if af:
         cmd.extend(["-af", af])
 
     cmd.extend(["-c:a", codec])
 
-    # Quality / bitrate (lossless codecs skip this block)
-    if codec not in ("pcm_s16le", "flac"):
-        bitrate = config.get("audio_bitrate", "")
-        if bitrate:
-            cmd.extend(["-b:a", str(bitrate)])
-        else:
-            quality = int(config.get("audio_quality", 5))
-            cmd.extend(_build_quality_args(codec, quality))
+    # Codec-specific quality / bitrate parameters
+    _apply_codec_params(cmd, codec, config)
 
+    # --- Shared output parameters ---
+    # Channel count
+    channels = config.get("audio_channels", 0)
+    if channels > 0:
+        cmd.extend(["-ac", str(channels)])
+
+    # Sample rate (0 = keep original)
     samplerate = config.get("audio_samplerate", 0)
     if samplerate != 0:
         cmd.extend(["-ar", str(samplerate)])
+
+    # Generate missing PTS (fixes timestamp issues)
+    if config.get("fflags_genpts", False):
+        cmd.extend(["-fflags", "+genpts"])
+
     cmd.extend(["-vn", out_file])
 
     res = subprocess.run(
@@ -205,7 +211,32 @@ def _build_filter(speed: float, sr: int, config: dict) -> str | None:
     return ",".join(filters) if filters else None
 
 
-def _build_quality_args(codec: str, quality: int) -> list[str]:
+def _apply_codec_params(cmd: list, codec: str, config: dict) -> None:
+    """Append codec-specific FFmpeg arguments (quality, bitrate, vorbis tuning)."""
+    if codec in ("pcm_s16le", "flac"):
+        return  # lossless — nothing to add
+
+    # --- Quality (0 = use codec default, skip -q:a) ---
+    quality = float(config.get("audio_quality", 5.5))
+    if quality != 0:
+        cmd.extend(_build_quality_args(codec, quality))
+
+    # --- Bitrate (applied together with quality for VBR tuning) ---
+    bitrate = config.get("audio_bitrate", "")
+    if bitrate:
+        cmd.extend(["-b:a", str(bitrate)])
+
+    # --- libvorbis-specific tuning ---
+    if codec == "libvorbis":
+        application = config.get("vorbis_application", "")
+        if application:
+            cmd.extend(["-application", application])
+        frame_duration = config.get("vorbis_frame_duration", 0)
+        if frame_duration:
+            cmd.extend(["-frame_duration", str(frame_duration)])
+
+
+def _build_quality_args(codec: str, quality: float) -> list[str]:
     """Map a normalized quality value (0-10, higher = better) to codec-specific FFmpeg arguments.
 
     Different codecs use different scales and directions for -q:a:
@@ -216,7 +247,7 @@ def _build_quality_args(codec: str, quality: int) -> list[str]:
     """
     if codec == "libmp3lame":
         # MP3: FFmpeg -q:a 0 = best, 9 = worst -> invert
-        inverted = max(0, min(9, 9 - quality))
+        inverted = max(0, min(9, 9 - int(quality)))
         return ["-q:a", str(inverted)]
 
     if codec == "aac":
