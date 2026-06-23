@@ -177,14 +177,9 @@ def _get_ffprobe(ffmpeg_path: str) -> str:
 def _build_filter(speed: float, sr: int, config: dict) -> str | None:
     """Build the FFmpeg audio filter chain string from config."""
     filters = []
-    pitch_mode = config.get("pitch_mode", "auto")
-    volume = config.get("audio_volume", 1.0)
-
-    if pitch_mode == "auto":
-        # Shift pitch naturally with speed: change sample rate then resample
+    if config.get("pitch", True):
         filters.append(f"asetrate={sr * speed},aresample={sr}")
-    elif pitch_mode == "keep":
-        # Preserve original pitch using atempo (0.5x–2.0x range; cascade outside)
+    else:
         t = speed
         while t > 2.0:
             filters.append("atempo=2.0")
@@ -193,14 +188,8 @@ def _build_filter(speed: float, sr: int, config: dict) -> str | None:
             filters.append("atempo=0.5")
             t /= 0.5
         filters.append(f"atempo={t}")
-    elif pitch_mode == "custom":
-        if speed != 1.0:
-            filters.append(f"atempo={speed}")
-        semitones = config.get("custom_pitch_semitones", 0)
-        if semitones != 0:
-            p = 2 ** (semitones / 12.0)
-            filters.append(f"asetrate={sr}*{p},atempo={1 / p},aresample={sr}")
 
+    volume = config.get("audio_volume", 1.0)
     if volume != 1.0:
         filters.append(f"volume={volume}")
 
@@ -208,38 +197,11 @@ def _build_filter(speed: float, sr: int, config: dict) -> str | None:
 
 
 def _apply_codec_params(cmd: list, codec: str, config: dict) -> None:
-    """Append codec-specific FFmpeg arguments (quality, bitrate, vorbis tuning)."""
+    """Append codec-specific FFmpeg arguments (bitrate)."""
     if codec in ("pcm_s16le", "flac"):
         return  # lossless — nothing to add
 
-    # --- Quality (0 = use codec default, skip -q:a) ---
-    quality = float(config.get("audio_quality", 5.5))
-    if quality != 0:
-        cmd.extend(_build_quality_args(codec, quality))
-
-    # --- Bitrate (applied together with quality for VBR tuning) ---
     bitrate = config.get("audio_bitrate", "")
     if bitrate:
         cmd.extend(["-b:a", str(bitrate)])
 
-def _build_quality_args(codec: str, quality: float) -> list[str]:
-    """Map a normalized quality value (0-10, higher = better) to codec-specific FFmpeg arguments.
-
-    Different codecs use different scales and directions for -q:a:
-      - libvorbis (ogg):  -q:a N     higher = better  (-2..10)
-      - libmp3lame (mp3): -q:a 9 - N  lower = better   (0..9, inverted)
-      - libopus:           -q:a N     higher = better  (0..10)
-    Lossless codecs (pcm_s16le, flac) never reach this function.
-    """
-    if codec == "libmp3lame":
-        # MP3: FFmpeg -q:a 0 = best, 9 = worst -> invert
-        inverted = max(0, min(9, 9 - int(quality)))
-        return ["-q:a", str(inverted)]
-
-    if codec == "aac":
-        # AAC: -q:a ~0.1 (worst) to ~2 (best)
-        scaled = round(max(0.1, min(2.0, quality / 5.0)), 1)
-        return ["-q:a", str(scaled)]
-
-    # libvorbis, libopus: -q:a, higher = better, pass through directly
-    return ["-q:a", str(quality)]

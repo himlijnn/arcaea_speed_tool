@@ -24,7 +24,7 @@ ffmpeg_path = "ffmpeg"
 # Speed multiplier
 speed_ratio = 1.25
 
-# Audio offset scale. 0 = auto (1 / speed_ratio).
+# Audio offset scale. (0 = auto: 1 / speed_ratio)
 offset_ratio = 0
 
 # Processing mode.
@@ -74,27 +74,17 @@ max_workers = 8
 # Keep metadata tags
 keep_metadata = false
 
-# Pitch mode: "auto" (shift with speed) | "keep" (preserve pitch) | "custom" (custom semitone shift)
-pitch_mode = "auto"
+# Pitch (true = shift pitch with speed, false = keep original pitch)
+pitch = true
 
-# Custom semitone shift (only used when pitch_mode = "custom")
-custom_pitch_semitones = 0
-
-# Output channel count (1 = mono, 2 = stereo)
+# Output channel count
 audio_channels = 2
 
 # Volume multiplier (1 = unchanged)
 audio_volume = 1
 
-# Audio bitrate (e.g. "192k"). Leave empty to use no bitrate constraint.
-audio_bitrate = "192k"
+# Audio bitrate (e.g. "188k"). Leave empty to use no bitrate constraint.
+audio_bitrate = "188k"
 
-# Audio quality (0-10, higher = better). 0 = use codec default.
-# Codec-specific mapping is processed automatically:
-#   ogg (libvorbis) -> -q:a N   (direct, N=-2..10)
-#   mp3 (libmp3lame)-> -q:a 9-N (inverted, 0=best in FFmpeg)
-#   wav / flac       -> lossless (ignored)
-audio_quality = 5.5
-
-# Output sample rate. 0 = keep original sample rate.
+# Output sample rate (0 = keep original sample rate)
 audio_samplerate = 44100
