@@ -131,10 +131,6 @@ def _process_one(
     if samplerate != 0:
         cmd.extend(["-ar", str(samplerate)])
 
-    # Generate missing PTS (fixes timestamp issues)
-    if config.get("fflags_genpts", False):
-        cmd.extend(["-fflags", "+genpts"])
-
     cmd.extend(["-vn", out_file])
 
     res = subprocess.run(
@@ -225,16 +221,6 @@ def _apply_codec_params(cmd: list, codec: str, config: dict) -> None:
     bitrate = config.get("audio_bitrate", "")
     if bitrate:
         cmd.extend(["-b:a", str(bitrate)])
-
-    # --- libvorbis-specific tuning ---
-    if codec == "libvorbis":
-        application = config.get("vorbis_application", "")
-        if application:
-            cmd.extend(["-application", application])
-        frame_duration = config.get("vorbis_frame_duration", 0)
-        if frame_duration:
-            cmd.extend(["-frame_duration", str(frame_duration)])
-
 
 def _build_quality_args(codec: str, quality: float) -> list[str]:
     """Map a normalized quality value (0-10, higher = better) to codec-specific FFmpeg arguments.

@@ -65,25 +65,6 @@ excluded_bpm = [
 # Audio file extensions to process
 include_extensions = [".ogg", ".wav"]
 
-# Pitch mode: "auto" (shift with speed) | "keep" (preserve pitch) | "custom" (custom semitone shift)
-pitch_mode = "auto"
-
-# Custom semitone shift (only used when pitch_mode = "custom")
-custom_pitch_semitones = 0
-
-# Audio bitrate (e.g. "192k"). Leave empty to use no bitrate constraint.
-audio_bitrate = "192k"
-
-# Audio quality (0-10, higher = better). 0 = use codec default.
-# Codec-specific mapping is handled automatically:
-#   ogg (libvorbis) -> -q:a N   (direct, N=-2..10)
-#   mp3 (libmp3lame)-> -q:a 9-N (inverted, 0=best in FFmpeg)
-#   wav / flac       -> lossless (ignored)
-audio_quality = 5.5
-
-# Volume multiplier (1 = unchanged)
-audio_volume = 1
-
 # Audio codec. Leave empty to auto-select by output file extension.
 audio_codec = ""
 
@@ -93,22 +74,27 @@ max_workers = 8
 # Keep metadata tags
 keep_metadata = false
 
+# Pitch mode: "auto" (shift with speed) | "keep" (preserve pitch) | "custom" (custom semitone shift)
+pitch_mode = "auto"
+
+# Custom semitone shift (only used when pitch_mode = "custom")
+custom_pitch_semitones = 0
+
 # Output channel count (1 = mono, 2 = stereo)
 audio_channels = 2
 
+# Volume multiplier (1 = unchanged)
+audio_volume = 1
+
+# Audio bitrate (e.g. "192k"). Leave empty to use no bitrate constraint.
+audio_bitrate = "192k"
+
+# Audio quality (0-10, higher = better). 0 = use codec default.
+# Codec-specific mapping is processed automatically:
+#   ogg (libvorbis) -> -q:a N   (direct, N=-2..10)
+#   mp3 (libmp3lame)-> -q:a 9-N (inverted, 0=best in FFmpeg)
+#   wav / flac       -> lossless (ignored)
+audio_quality = 5.5
+
 # Output sample rate. 0 = keep original sample rate.
 audio_samplerate = 44100
-
-# Generate missing PTS (recommended: true)
-fflags_genpts = true
-
-# =============================================================================
-# libvorbis (ogg) specific
-# =============================================================================
-
-# Application mode. "audio" optimizes for consistent-bitrate playback.
-# Leave empty to use the FFmpeg default.
-vorbis_application = "audio"
-
-# Frame duration in ms. 20 = default. Lower = higher precision / larger file.
-vorbis_frame_duration = 20
