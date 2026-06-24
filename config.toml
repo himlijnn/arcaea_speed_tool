@@ -1,30 +1,24 @@
 [paths]
 
 # Input directory (songs folder path)
-songs_dir = "./songs"
+input_dir = "./songs"
 
-# Output directory (all processed files are written here)
+# Output directory (all processed files will be written here)
 output_dir = "./songs_output"
-
-# FFmpeg executable path for audio processing.
-# - Linux / macOS: "ffmpeg" (uses system PATH)
-# - Windows:       "C:\\path\\to\\ffmpeg.exe"
-ffmpeg_path = "ffmpeg"
 
 [global]
 
 # Speed multiplier
-speed_ratio = 1.25
+speed = 1.25
 
-# Audio offset scale. (0 = auto: 1 / speed_ratio)
-offset_ratio = 0
+# Audio offset scale. (0 = auto: 1 / speed)
+offset = 0
 
-# Processing mode.
-# "" (empty) = all. "chart" / "audio" / "songlist" = single mode.
-mode = ""
+# Processing mode: "all" / "chart" / "audio" / "songlist"
+mode = "all"
 
 # Copy unprocessed files (images etc.) to output directory.
-copy_unprocessed = true
+copy = true
 
 # Force LF line endings on output files
 force_lf = true
@@ -46,14 +40,13 @@ excluded_bpm = [
 
 [audio]
 
-# Audio file extensions to process
-include_extensions = [".ogg", ".wav"]
-
-# Audio codec. Leave empty to auto-select by output file extension.
-audio_codec = ""
+# Force non-WAV audio to OGG Vorbis output.
+# true  = accept all audio formats, convert non-WAV to .ogg
+# false = accept all audio formats, keep original encoding
+force_vorbis = true
 
 # Number of parallel worker threads
-max_workers = 8
+workers = 8
 
 # Keep metadata tags
 keep_metadata = false
@@ -62,13 +55,13 @@ keep_metadata = false
 pitch = true
 
 # Output channel count
-audio_channels = 2
+channels = 2
 
 # Volume multiplier (1 = unchanged)
-audio_volume = 1
+volume = 1
 
 # Audio bitrate (e.g. "188k"). Leave empty to use no bitrate constraint.
-audio_bitrate = "188k"
+bitrate = "188k"
 
 # Output sample rate (0 = keep original sample rate)
-audio_samplerate = 44100
+samplerate = 44100

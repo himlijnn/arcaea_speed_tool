@@ -3,9 +3,7 @@
 Uses FFmpeg to change audio playback speed. Supports:
 - Auto pitch shift (asetrate + aresample)
 - Preserve original pitch (atempo cascading)
-- Custom semitone offset
 - Volume adjustment
-- Metadata handling
 - Multi-threaded parallel processing
 """
 
@@ -16,6 +14,9 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 
 from . import utils
+
+# All supported audio input extensions
+AUDIO_EXTENSIONS = {".wav", ".ogg", ".mp3", ".flac", ".m4a", ".opus", ".aiff", ".aif"}
 
 # Codec lookup table: file extension -> FFmpeg codec name
 _CODEC_MAP = {
@@ -45,7 +46,7 @@ def process(
         songs_dir: songs input directory.
         output_dir: Output directory.
         speed_ratio: Speed multiplier.
-        config: Audio config dict (from config.toml [audio] section, plus ffmpeg_path).
+        config: Audio config dict (from config.toml [audio] section).
 
     Returns:
         Number of files successfully processed.
@@ -53,24 +54,27 @@ def process(
     global _total_files, _processed_count
     _processed_count = 0
 
-    ffmpeg = config["ffmpeg_path"]
-    extensions = config.get("include_extensions", [".ogg", ".wav"])
-    max_workers = config.get("max_workers", 8)
+    ffmpeg = _find_ffmpeg()
+    force_vorbis = config.get("force_vorbis", True)
+    max_workers = config.get("workers", 8)
 
     # Collect all audio files to process
     tasks = []
     for dirpath, _, filenames in os.walk(songs_dir):
         for f in filenames:
             ext = os.path.splitext(f)[1].lower()
-            if ext in extensions:
-                in_file = os.path.join(dirpath, f)
-                rel = os.path.relpath(in_file, os.path.dirname(songs_dir))
-                # Always preserve the original format
+            if ext not in AUDIO_EXTENSIONS:
+                continue
+            in_file = os.path.join(dirpath, f)
+            rel = os.path.relpath(in_file, os.path.dirname(songs_dir))
+            if force_vorbis and ext != ".wav":
+                out_ext = "ogg"
+            else:
                 out_ext = ext.lstrip(".")
-                out_file = os.path.join(
-                    output_dir, f"{os.path.splitext(rel)[0]}.{out_ext}"
-                )
-                tasks.append((in_file, out_file))
+            out_file = os.path.join(
+                output_dir, f"{os.path.splitext(rel)[0]}.{out_ext}"
+            )
+            tasks.append((in_file, out_file))
 
     _total_files = len(tasks)
     if _total_files == 0:
@@ -106,7 +110,7 @@ def _process_one(
 
     # Determine output codec
     ext = os.path.splitext(out_file)[1].lower()
-    codec = config.get("audio_codec") or _CODEC_MAP.get(ext, "pcm_s16le")
+    codec = _CODEC_MAP.get(ext, "pcm_s16le")
 
     # Build FFmpeg command
     cmd = [ffmpeg, "-y", "-i", in_file]
@@ -122,12 +126,12 @@ def _process_one(
 
     # --- Shared output parameters ---
     # Channel count
-    channels = config.get("audio_channels", 0)
+    channels = config.get("channels", 0)
     if channels > 0:
         cmd.extend(["-ac", str(channels)])
 
     # Sample rate (0 = keep original)
-    samplerate = config.get("audio_samplerate", 0)
+    samplerate = config.get("samplerate", 0)
     if samplerate != 0:
         cmd.extend(["-ar", str(samplerate)])
 
@@ -163,6 +167,11 @@ def _probe(filepath: str, ffmpeg: str) -> dict:
     return {"sample_rate": 44100}
 
 
+def _find_ffmpeg() -> str:
+    """Return 'ffmpeg' — resolved via system PATH."""
+    return "ffmpeg"
+
+
 def _get_ffprobe(ffmpeg_path: str) -> str:
     """Derive the ffprobe path from the ffmpeg path.
 
@@ -189,7 +198,7 @@ def _build_filter(speed: float, sr: int, config: dict) -> str | None:
             t /= 0.5
         filters.append(f"atempo={t}")
 
-    volume = config.get("audio_volume", 1.0)
+    volume = config.get("volume", 1.0)
     if volume != 1.0:
         filters.append(f"volume={volume}")
 
@@ -198,10 +207,10 @@ def _build_filter(speed: float, sr: int, config: dict) -> str | None:
 
 def _apply_codec_params(cmd: list, codec: str, config: dict) -> None:
     """Append codec-specific FFmpeg arguments (bitrate)."""
-    if codec in ("pcm_s16le", "flac"):
+    if codec == "pcm_s16le":
         return  # lossless — nothing to add
 
-    bitrate = config.get("audio_bitrate", "")
+    bitrate = config.get("bitrate", "")
     if bitrate:
         cmd.extend(["-b:a", str(bitrate)])
 
