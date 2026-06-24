@@ -83,10 +83,10 @@ All settings can be specified via CLI arguments. If omitted (or when running run
 | `-c, --copy` / `-nc, --no-copy` | Copy unprocessed files to output | true |
 | `-p, --pitch` / `-np, --no-pitch` | Auto pitch shift with speed | true |
 | `-e, --enable-exclusion` / `-ne, --no-exclusion` | Use BPM exclusion list | true |
+| `-v, --force-vorbis` / `-nv, --no-force-vorbis` | Convert non-WAV to OGG Vorbis | true |
 | `-w, --workers N` | Parallel worker threads for audio | |
 | `--offset FLOAT` | Audio offset ratio | |
 | `--force-lf` / `--no-force-lf` | Force LF line endings | true |
-| `--force-vorbis` / `--no-force-vorbis` | Convert non-WAV to OGG Vorbis | true |
 | `--keep-metadata` / `--no-keep-metadata` | Keep audio metadata tags | false |
 | `--channels N` | Output channel count | |
 | `--volume FLOAT` | Volume multiplier | |

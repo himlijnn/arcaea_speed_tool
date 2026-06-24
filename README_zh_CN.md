@@ -82,10 +82,10 @@ arcaea-speed-tool -s 2 -p --bitrate 256k
 | `-c, --copy` / `-nc, --no-copy` | 复制未处理文件到输出目录 | true |
 | `-p, --pitch` / `-np, --no-pitch` | 音频变调 | true |
 | `-e, --enable-exclusion` / `-ne, --no-exclusion` | 使用 BPM 排除列表 | true |
+| `-v, --force-vorbis` / `-nv, --no-force-vorbis` | 强制非 WAV 音频转为 OGG Vorbis | true |
 | `-w, --workers N` | 音频处理并行线程数 | |
 | `--offset FLOAT` | 音频 offset 倍率 | |
 | `--force-lf` / `--no-force-lf` | 强制 LF 换行符 | true |
-| `--force-vorbis` / `--no-force-vorbis` | 强制非 WAV 音频转为 OGG Vorbis | true |
 | `--keep-metadata` / `--no-keep-metadata` | 保留音频元数据 | false |
 | `--channels N` | 输出声道数 | |
 | `--volume FLOAT` | 音量倍率 | |

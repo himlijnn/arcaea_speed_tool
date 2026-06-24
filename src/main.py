@@ -250,9 +250,9 @@ def _build_parser() -> argparse.ArgumentParser:
                          help="Audio bitrate (e.g. '188k')")
     g_audio.add_argument("--samplerate", type=int, default=None,
                          help="Output sample rate in Hz (0=keep original)")
-    g_audio.add_argument("--force-vorbis", action="store_true", default=None,
+    g_audio.add_argument("-v", "--force-vorbis", action="store_true", default=None,
                          help="Force non-WAV to OGG Vorbis output (default: on)")
-    g_audio.add_argument("--no-force-vorbis", action="store_false", dest="force_vorbis", default=None,
+    g_audio.add_argument("-nv", "--no-force-vorbis", action="store_false", dest="force_vorbis", default=None,
                          help="Keep original encoding")
     g_audio.add_argument("--keep-metadata", action="store_true", default=None,
                          help="Keep audio metadata tags")
